@@ -10,7 +10,7 @@ const MONGO_URI ='mongodb+srv://jadhavparth2626_db_user:ParthJ2602@cluster0.0vud
 
 // ✅ CORS Middleware
 const allowedOrigins = [
-  'https://artisian-connect-git-main-nihar1604s-projects.vercel.app',
+  'https://artisian-connect-frontend.vercel.app',
   'http://localhost:5500',
   'http://localhost:5173',
   'http://127.0.0.1:5500',

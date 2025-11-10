@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 const MONGO_URI ='mongodb+srv://jadhavparth2626_db_user:ParthJ2602@cluster0.0vudh4r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -13,7 +13,9 @@ const allowedOrigins = [
   'https://artisian-connect-frontend-729s.vercel.app',
   'http://localhost:5500',
   'http://localhost:5173',
-  'http://localhost:3000'
+  'http://127.0.0.1:5500',
+  'http://localhost:3000',
+  'null'
 ];
 
 const corsOptions = {
@@ -27,7 +29,8 @@ const corsOptions = {
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  optionsSuccessStatus: 200
 };
 
 // ✅ Must come before routes

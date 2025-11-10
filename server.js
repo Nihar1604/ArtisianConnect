@@ -1,22 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
-const userRoutes = require('./routes/api/user');
-const cartRoutes = require('./routes/api/cart');
-const productRoutes = require('./routes/api/products');
-const orderRoutes = require('./routes/api/orders');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const MONGO_URI = 'mongodb+srv://jadhavparth2626_db_user:ParthJ2602@cluster0.0vudh4r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI ='mongodb+srv://jadhavparth2626_db_user:ParthJ2602@cluster0.0vudh4r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 const allowedOrigins = [
   'https://artisian-connect-frontend-729s.vercel.app', 
-  'http://localhost:5500', 
+  'http://localhost:5500',
+  'http://localhost:5173',
+  'http://localhost:3000'
 ];
 
+// Middleware
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -29,26 +28,64 @@ app.use(cors({
   credentials: true,
 }));
 
-// ✅ Handle preflight OPTIONS requests explicitly
 app.options('*', cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json()); // Parse JSON request bodies
+// Static routes
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+app.get('/favicon.png', (req, res) => res.status(204).end());
+app.get('/health', (req, res) => res.status(200).json({ status: 'OK' }));
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    message: 'Artisans Connect API is running...',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
 
-// ✅ API Routes
+// API Routes
+const userRoutes = require('./routes/api/user');
+const cartRoutes = require('./routes/api/cart');
+const productRoutes = require('./routes/api/products');
+const orderRoutes = require('./routes/api/orders');
+
 app.use('/api/users', userRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-// ✅ Root route
-app.get('/', (req, res) => res.send('Artisans Connect API is running...'));
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({ 
+    success: false,
+    message: 'Route not found',
+    path: req.originalUrl
+  });
+});
 
-// ✅ MongoDB Connection
+// Error Handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(err.status || 500).json({ 
+    success: false,
+    message: err.message || 'Internal server error'
+  });
+});
+
+// MongoDB Connection
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB");
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
-    });
+    if (require.main === module) {
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+      });
+    }
   })
-  .catch(err => console.error("❌ Could not connect to MongoDB...", err));
+  .catch(err => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  });
+
+module.exports = app;

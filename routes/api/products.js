@@ -30,12 +30,12 @@ const isSeller = (req, res, next) => {
 
 router.get('/', productController.getAllProducts);
 
+router.get('/search', productController.searchProducts);
+
 router.post('/', [auth, isSeller], productController.addProduct);
 
 router.put('/:id', [auth, isSeller], productController.updateProduct);
 
 router.delete('/:id', [auth, isSeller], productController.deleteProduct);
-
-router.get('/search', productController.searchProducts);
 
 module.exports = router;

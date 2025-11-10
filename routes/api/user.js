@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const userController = require('../../controller/userController');
+const jwt = require('jsonwebtoken'); // ✅ ADD THIS LINE
+require('dotenv').config(); // ✅ ADD THIS LINE
 
 const auth = (req, res, next) => {
 
